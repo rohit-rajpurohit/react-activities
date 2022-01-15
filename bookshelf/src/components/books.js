@@ -1,20 +1,10 @@
 import React from "react";
 import { getBooks } from "../data/fakeBookData";
 import Like from "./common/like";
-import Pagination from "./common/pagination";
-import { paginate } from "../utils/paginate";
 
 class Movies extends React.Component {
   state = {
     books: getBooks(),
-    currentPage: 1,
-    pageSize: 4,
-  };
-
-  handleDelete = (book) => {
-    console.log(book);
-    const books = this.state.books.filter((b) => b.isbn !== book.isbn);
-    this.setState({ books });
   };
 
   handleLiked = (book) => {
@@ -25,17 +15,16 @@ class Movies extends React.Component {
     this.setState({ books });
   };
 
-  handlePageChange = (page) => {
-    this.setState({ currentPage: page });
+  handleDelete = (book) => {
+    console.log(book);
+    const books = this.state.books.filter((b) => b.isbn !== book.isbn);
+    this.setState({ books });
   };
 
   render() {
     const { length: mCount } = this.state.books;
-    const { pageSize, currentPage, books: allBooks } = this.state;
 
     if (mCount === 0) return <p>There are no books in the shelf.</p>;
-
-    const books = paginate(allBooks, currentPage, pageSize);
 
     return (
       <>
@@ -54,7 +43,7 @@ class Movies extends React.Component {
             </tr>
           </thead>
           <tbody>
-            {books.map((book) => (
+            {this.state.books.map((book) => (
               <tr key={book.isbn}>
                 <td>{book.title}</td>
                 <td>{book.genre.name}</td>
@@ -80,12 +69,6 @@ class Movies extends React.Component {
             ))}
           </tbody>
         </table>
-        <Pagination
-          itemsCount={mCount}
-          pageSize={pageSize}
-          currentPage={currentPage}
-          onPageChange={this.handlePageChange}
-        />
       </>
     );
   }
