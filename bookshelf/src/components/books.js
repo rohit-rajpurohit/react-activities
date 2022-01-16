@@ -5,6 +5,7 @@ import Like from "./common/like";
 import Pagination from "./common/pagination";
 import { paginate } from "../utils/paginate";
 import ListGroup from "./common/listGroup";
+import _ from "lodash";
 
 class Movies extends React.Component {
   state = {
@@ -12,11 +13,12 @@ class Movies extends React.Component {
     genres: [],
     currentPage: 1,
     pageSize: 4,
+    sortColumn: { path: "title", order: "asc" },
   };
 
   componentDidMount() {
     //adding new object 'All Genres' to show all the books and then pass this to genres in state
-    const genres = [{ name: "All Genres" }, ...getGenres()];
+    const genres = [{ _id: "", name: "All Genres" }, ...getGenres()];
     this.setState({ books: getBooks(), genres });
   }
 
@@ -42,16 +44,29 @@ class Movies extends React.Component {
     this.setState({ selectedGenre: genre, currentPage: 1 });
   };
 
+  handleSort = (path) => {
+    const sortColumn = { ...this.state.sortColumn };
+    //change sorting order if the path is same (descending sort if column already sorted in ascending order and vice versa)
+    if (sortColumn.path === path) {
+      sortColumn.order = sortColumn.order === "asc" ? "desc" : "asc";
+    } else {
+      sortColumn.path = path;
+      sortColumn.order = "asc";
+    }
+    this.setState({ sortColumn });
+  };
+
   render() {
-    const { length: mCount } = this.state.books;
+    const { length: bCount } = this.state.books;
     const {
       pageSize,
       currentPage,
+      sortColumn,
       selectedGenre,
       books: allBooks,
     } = this.state;
 
-    if (mCount === 0) return <p>There are no books in the shelf.</p>;
+    if (bCount === 0) return <p>There are no books in the shelf.</p>;
 
     //filtering data on the basis on selectedGenre,if nothing selected all the items are stored
     //selectedGenre._id condition because genres in state contain "All Genres" without id
@@ -60,8 +75,11 @@ class Movies extends React.Component {
         ? allBooks.filter((b) => b.genre._id === selectedGenre._id)
         : allBooks;
 
+    //sorting filtered list on the basis of columns
+    const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
+
     //passing filtered data to paginate to paginate the filtered data
-    const books = paginate(filtered, currentPage, pageSize);
+    const books = paginate(sorted, currentPage, pageSize);
 
     return (
       <>
@@ -78,12 +96,14 @@ class Movies extends React.Component {
             <table className="table table-dark table-striped">
               <thead>
                 <tr>
-                  <th>Title</th>
-                  <th>Genre</th>
-                  <th>Author</th>
-                  <th>Pages</th>
-                  <th>Published</th>
-                  <th>Ratings</th>
+                  <th onClick={() => this.handleSort("title")}>Title</th>
+                  <th onClick={() => this.handleSort("genre.name")}>Genre</th>
+                  <th onClick={() => this.handleSort("author")}>Author</th>
+                  <th onClick={() => this.handleSort("pages")}>Pages</th>
+                  <th onClick={() => this.handleSort("published")}>
+                    Published
+                  </th>
+                  <th onClick={() => this.handleSort("ratings")}>Ratings</th>
                   <th></th>
                   <th></th>
                 </tr>
