@@ -1,11 +1,27 @@
-import "./App.css";
+import React from "react";
+import { Route, Switch, Redirect } from "react-router-dom";
 import Books from "./components/books";
+import Readers from "./components/readers";
+import NotFound from "./components/notFound";
+import Navbar from "./components/navbar";
+import BookForm from "./components/bookForm";
+import "./App.css";
 
 function App() {
   return (
-    <main className="container">
-      <Books />
-    </main>
+    <React.Fragment>
+      <Navbar />
+      <main className="container">
+        <Switch>
+          <Route path="/books/:isbn" component={BookForm} />
+          <Route path="/books" component={Books} />
+          <Route path="/readers" component={Readers} />
+          <Route path="/not-found" component={NotFound} />
+          <Redirect from="/" exact to="/books" />
+          <Redirect to="/not-found" />
+        </Switch>
+      </main>
+    </React.Fragment>
   );
 }
 
