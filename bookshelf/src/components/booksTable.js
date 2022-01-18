@@ -1,11 +1,16 @@
 import React from "react";
 import Like from "./common/like";
-import Table from "./table";
+import Table from "./common/table";
+import { Link } from "react-router-dom";
 
 class BooksTable extends React.Component {
   //local property columns (not the part of state as this will not change throughout the lifecycle of this component)
   columns = [
-    { path: "title", label: "Title" },
+    {
+      path: "title",
+      label: "Title",
+      content: (book) => <Link to={`/books/${book.isbn}`}>{book.title}</Link>, //Link inplace of <a> to avoid reload of packages
+    },
     { path: "genre.name", label: "Genre" },
     { path: "author", label: "Author" },
     { path: "pages", label: "Pages" },
