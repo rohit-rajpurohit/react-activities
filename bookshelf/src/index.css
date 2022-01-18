@@ -8,11 +8,16 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.navbar {
+  height: 10vh;
+  margin-bottom: 100px;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
 #root {
-  padding: 30px 0 0 0;
+  padding: 0;
 }
