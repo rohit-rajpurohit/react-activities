@@ -5,6 +5,7 @@ import Readers from "./components/readers";
 import NotFound from "./components/notFound";
 import Navbar from "./components/navbar";
 import BookForm from "./components/bookForm";
+import LoginForm from "./components/loginForm";
 import "./App.css";
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
       <Navbar />
       <main className="container">
         <Switch>
+          <Route path="/login" component={LoginForm} />
           <Route path="/books/:isbn" component={BookForm} />
           <Route path="/books" component={Books} />
           <Route path="/readers" component={Readers} />
