@@ -16,8 +16,9 @@ class TableHeader extends React.Component {
   renderSortIcon = (column) => {
     const { sortColumn } = this.props;
     if (column.path !== sortColumn.path) return null;
-    if (sortColumn.order === "asc") return <i className="fa fa-sort-up"></i>;
-    return <i className="fa fa-sort-down"></i>;
+    if (sortColumn.order === "asc")
+      return <i className="fa fa-sort-up mx-2"></i>;
+    return <i className="fa fa-sort-down mx-2"></i>;
   };
 
   render() {
@@ -31,7 +32,9 @@ class TableHeader extends React.Component {
               key={column.path || column.key}
               onClick={() => this.raiseSort(column.path)}
             >
-              {column.label} {this.renderSortIcon(column)}
+              <div className="d-flex flex-row justify-content-start">
+                {column.label} {this.renderSortIcon(column)}
+              </div>
             </th>
           ))}
         </tr>
