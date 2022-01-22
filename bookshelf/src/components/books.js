@@ -1,10 +1,11 @@
 import React from "react";
 import { getBooks } from "../data/fakeBookData";
 import { getGenres } from "../data/fakeGenreData";
+import { paginate } from "../utils/paginate";
 import BooksTable from "./booksTable";
 import Pagination from "./common/pagination";
-import { paginate } from "../utils/paginate";
 import ListGroup from "./common/listGroup";
+import SearchBox from "./searchBox";
 import _ from "lodash";
 
 class Movies extends React.Component {
@@ -12,7 +13,9 @@ class Movies extends React.Component {
     books: [],
     genres: [],
     currentPage: 1,
-    pageSize: 4,
+    pageSize: 5,
+    searchQuery: "",
+    selectedGenre: null,
     sortColumn: { path: "title", order: "asc" },
   };
 
@@ -44,6 +47,10 @@ class Movies extends React.Component {
     this.setState({ selectedGenre: genre, currentPage: 1 });
   };
 
+  handleSearch = (query) => {
+    this.setState({ searchQuery: query, selectedGenre: null, currentPage: 1 });
+  };
+
   handleSort = (sortColumn) => {
     this.setState({ sortColumn });
   };
@@ -54,15 +61,19 @@ class Movies extends React.Component {
       currentPage,
       sortColumn,
       selectedGenre,
+      searchQuery,
       books: allBooks,
     } = this.state;
 
-    //filtering data on the basis on selectedGenre,if nothing selected all the items are stored
+    //filtering data on the basis of selectedGenre or serachQuery,if nothing selected all the items are stored
     //selectedGenre._id condition because genres in state contain "All Genres" with empty id string
-    const filtered =
-      selectedGenre && selectedGenre._id
-        ? allBooks.filter((b) => b.genre._id === selectedGenre._id)
-        : allBooks;
+    let filtered = allBooks;
+    if (searchQuery)
+      filtered = allBooks.filter((b) =>
+        b.title.toLowerCase().startsWith(searchQuery.toLowerCase())
+      );
+    else if (selectedGenre && selectedGenre._id)
+      filtered = allBooks.filter((b) => b.genre._id === selectedGenre._id);
 
     //sorting filtered list on the basis of columns
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
@@ -75,7 +86,7 @@ class Movies extends React.Component {
 
   render() {
     const { length: bCount } = this.state.books;
-    const { pageSize, currentPage, sortColumn } = this.state;
+    const { pageSize, currentPage, sortColumn, searchQuery } = this.state;
 
     if (bCount === 0) return <p>There are no books in the shelf.</p>;
 
@@ -83,29 +94,34 @@ class Movies extends React.Component {
 
     return (
       <>
-        <div className="row">
-          <div className="col-3 m-1">
-            <ListGroup
-              items={this.state.genres}
-              selectedItem={this.state.selectedGenre}
-              onItemSelect={this.handleGenreSelect}
-            />
-          </div>
-          <div className="col">
-            <p>Showing {totalCount} books in the shelf.</p>
-            <BooksTable
-              books={data}
-              sortColumn={sortColumn}
-              onSort={this.handleSort}
-              onDelete={this.handleDelete}
-              onLike={this.handleLiked}
-            />
-            <Pagination
-              itemsCount={totalCount}
-              pageSize={pageSize}
-              currentPage={currentPage}
-              onPageChange={this.handlePageChange}
-            />
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col col-sm-2 m-2">
+              <ListGroup
+                items={this.state.genres}
+                selectedItem={this.state.selectedGenre}
+                onItemSelect={this.handleGenreSelect}
+              />
+            </div>
+            <div className="col py-3">
+              <p className="pt-2 border-top border-2 border-dark">
+                Showing {totalCount} books in the shelf.
+              </p>
+              <SearchBox value={searchQuery} onChange={this.handleSearch} />
+              <BooksTable
+                books={data}
+                sortColumn={sortColumn}
+                onSort={this.handleSort}
+                onDelete={this.handleDelete}
+                onLike={this.handleLiked}
+              />
+              <Pagination
+                itemsCount={totalCount}
+                pageSize={pageSize}
+                currentPage={currentPage}
+                onPageChange={this.handlePageChange}
+              />
+            </div>
           </div>
         </div>
       </>
