@@ -1,5 +1,6 @@
 import React from "react";
-import { getBooks } from "../data/fakeBookData";
+import { Link } from "react-router-dom";
+import { getBooks, deleteBook } from "../data/fakeBookData";
 import { getGenres } from "../data/fakeGenreData";
 import { paginate } from "../utils/paginate";
 import BooksTable from "./booksTable";
@@ -29,9 +30,11 @@ class Movies extends React.Component {
     console.log(book);
     const books = this.state.books.filter((b) => b.isbn !== book.isbn);
     this.setState({ books });
+
+    deleteBook(book.isbn);
   };
 
-  handleLiked = (book) => {
+  handleLike = (book) => {
     const books = [...this.state.books];
     const index = books.indexOf(book);
     books[index] = { ...books[index] };
@@ -104,6 +107,13 @@ class Movies extends React.Component {
               />
             </div>
             <div className="col py-3">
+              <Link
+                to="/books/new"
+                className="btn btn-primary"
+                style={{ marginBottom: 20 }}
+              >
+                New Book
+              </Link>
               <p className="pt-2 border-top border-2 border-dark">
                 Showing {totalCount} books in the shelf.
               </p>
@@ -113,7 +123,7 @@ class Movies extends React.Component {
                 sortColumn={sortColumn}
                 onSort={this.handleSort}
                 onDelete={this.handleDelete}
-                onLike={this.handleLiked}
+                onLike={this.handleLike}
               />
               <Pagination
                 itemsCount={totalCount}
