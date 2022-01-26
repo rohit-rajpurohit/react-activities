@@ -1,3 +1,4 @@
+import * as genresAPI from "./fakeGenreData";
 const books = [
   {
     isbn: "9780593336823",
@@ -103,4 +104,32 @@ const books = [
 
 export function getBooks() {
   return books;
+}
+
+export function getBook(isbn) {
+  return books.find((b) => b.isbn === isbn);
+}
+
+export function saveBook(book) {
+  let bookData = books.find((b) => b.isbn === book.isbn) || {};
+  bookData.title = book.title;
+  bookData.genre = genresAPI.genres.find((g) => g._id === book.genreId);
+  bookData.author = book.author;
+  bookData.pages = book.pages;
+  bookData.published = book.published;
+  bookData.ratings = book.ratings;
+  bookData.liked = false;
+
+  if (!bookData.isbn) {
+    bookData.isbn = Date.now().toString();
+    books.push(bookData);
+  }
+
+  return bookData;
+}
+
+export function deleteBook(isbn) {
+  let bookData = books.find((b) => b.isbn === isbn);
+  books.splice(books.indexOf(bookData), 1);
+  return bookData;
 }
